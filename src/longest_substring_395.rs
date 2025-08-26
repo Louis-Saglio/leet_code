@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 #[allow(dead_code)]
-fn longest_substring_395(s: &str, k: usize) -> u32 {
+fn longest_substring_395(s: &str, k: usize) -> usize {
     let mut char_freq: HashMap<_, usize> = HashMap::new();
     for c in s.chars() {
         char_freq.entry(c).and_modify(|v| *v += 1).or_insert(1);
@@ -12,7 +12,7 @@ fn longest_substring_395(s: &str, k: usize) -> u32 {
         .map(|(k, _)| *k)
         .collect::<HashSet<_>>();
     if too_rare_chars.is_empty() {
-        s.len() as u32
+        s.len()
     } else {
         s
             .split(|it| too_rare_chars.contains(&it))
