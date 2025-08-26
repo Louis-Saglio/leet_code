@@ -1,0 +1,40 @@
+use std::collections::{HashMap, HashSet};
+
+#[allow(dead_code)]
+fn longest_substring_395(s: &str, k: usize) -> u32 {
+    let mut char_freq: HashMap<_, usize> = HashMap::new();
+    for c in s.chars() {
+        char_freq.entry(c).and_modify(|v| *v += 1).or_insert(1);
+    }
+    let too_rare_chars = char_freq
+        .iter()
+        .filter(|(_, v)| *v < &k)
+        .map(|(k, _)| *k)
+        .collect::<HashSet<_>>();
+    if too_rare_chars.is_empty() {
+        s.len() as u32
+    } else {
+        s
+            .split(|it| too_rare_chars.contains(&it))
+            .filter(|it| it.len() >= k)
+            .map(|it| longest_substring_395(it, k))
+            .max()
+            .unwrap_or(0)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::longest_substring_395::longest_substring_395;
+
+    #[test]
+    fn test1_395() {
+        assert_eq!(longest_substring_395("ababbc", 2), 5);
+        assert_eq!(longest_substring_395("aaabb", 3), 3);
+        assert_eq!(longest_substring_395("abcabcbb", 3), 0);
+        assert_eq!(longest_substring_395("dabcabcbb", 2), 8);
+        assert_eq!(longest_substring_395("dabbaebcbb", 2), 4);
+        assert_eq!(longest_substring_395("bbbbb", 1), 5);
+        assert_eq!(longest_substring_395("pwwkew", 2), 2);
+    }
+}
