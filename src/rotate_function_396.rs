@@ -1,5 +1,5 @@
 #[allow(dead_code)]
-fn rotate_function(nums: Vec<i32>) -> i32 {
+fn rotate_function(_nums: Vec<i32>) -> i32 {
     // Not an algorithmic problem but a boring math problem.
     // Just figure out a math function that maps f(n) to f(n+1).
     // Then run this function for each n and find the max.
