@@ -23,8 +23,8 @@ fn integer_replacement_internal(n: u32, number_of_steps: u8, memory: &mut HashMa
 }
 
 #[allow(dead_code)]
-fn integer_replacement(n: u32) -> u8 {
-    integer_replacement_internal(n, 0, &mut HashMap::new())
+fn integer_replacement(n: i32) -> i32 {
+    integer_replacement_internal(n as u32, 0, &mut HashMap::new()) as i32
 }
 
 #[cfg(test)]
@@ -45,7 +45,7 @@ mod tests {
     }
     #[test]
     fn test_integer_replacement_3() {
-        assert_eq!(integer_replacement(u32::MAX - 1), 33);
+        assert_eq!(integer_replacement(i32::MAX - 1), 33);
     }
 
     #[test]
@@ -64,7 +64,7 @@ mod tests {
     fn test_integer_replacement_6() {
         let start = Instant::now();
         for i in 1..100_000 {
-            integer_replacement(u32::MAX - i);
+            integer_replacement(i32::MAX - i);
         }
         println!("{:?}", start.elapsed());
     }
