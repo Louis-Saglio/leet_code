@@ -28,28 +28,28 @@ pub fn add_two_numbers(
 ) -> Option<Box<ListNode>> {
     let mut node_1 = l1;
     let mut node_2 = l2;
-    let mut sum = vec![];
     let mut carry = 0;
-    loop {
-        match (&node_1, &node_2) {
-            (None, None) => {
-                if carry == 1 {
-                    sum.push(1);
-                }
-                return Some(ListNode::new_from_vec(sum));
-            }
-            (node_1, node_2) => {
-                let mut val = carry
-                    + node_1.as_ref().map(|it| it.val).unwrap_or(0)
-                    + node_2.as_ref().map(|it| it.val).unwrap_or(0);
-                carry = val / 10;
-                val %= 10;
-                sum.push(val);
-            }
+    let mut dummy_head = ListNode::new(0);
+    let mut current = &mut dummy_head;
+    while node_1.is_some() || node_2.is_some() || carry == 1 {
+        let mut val = carry;
+        if let Some(ref node_1) = node_1 {
+            val += node_1.val;
         }
+        if let Some(ref node_2) = node_2 {
+            val += node_2.val;
+        }
+        carry = val / 10;
+        val = val % 10;
+
+        current.next = Some(Box::new(ListNode::new(val)));
+
+        current = current.next.as_mut().unwrap();
+
         node_1 = node_1.and_then(|it| it.next);
         node_2 = node_2.and_then(|it| it.next);
     }
+    dummy_head.next
 }
 
 #[test]
