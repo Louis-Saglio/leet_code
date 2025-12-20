@@ -30,31 +30,22 @@ Constraints:
     s consists of English letters, digits, symbols, and spaces.
 
 **/
-
 use std::cmp::max;
 use std::collections::HashMap;
 
 #[allow(dead_code)]
 pub fn length_of_longest_substring(s: String) -> i32 {
-    let mut i = 0;
-    let chars = s.as_bytes();
+    let mut last_seen_index_by_char = HashMap::new();
+    let mut start = 0;
     let mut max_len = 0;
-    let mut current_len = 0;
-    let mut index_by_char = HashMap::new();
-    while i != s.len() {
-        let mut char = chars[i];
-        if index_by_char.contains_key(&char) {
-            i = index_by_char[&char] + 1;
-            char = chars[i];
-            current_len = 0;
-            index_by_char.clear();
+    for (end, char) in s.as_bytes().iter().enumerate() {
+        if let Some(&last_seen_index) = last_seen_index_by_char.get(&char) {
+            start = max(start, last_seen_index + 1);
         }
-        index_by_char.insert(char, i);
-        current_len += 1;
-        max_len = max(max_len, current_len);
-        i += 1;
+        last_seen_index_by_char.insert(char, end);
+        max_len = max(max_len, end - start + 1);
     }
-    max_len
+    max_len as i32
 }
 
 #[test]
@@ -90,4 +81,9 @@ pub fn test_6() {
 #[test]
 pub fn test_7() {
     assert_eq!(length_of_longest_substring("".into()), 0);
+}
+
+#[test]
+pub fn test_8() {
+    assert_eq!(length_of_longest_substring("axebcrtudbefg".into()), 9);
 }
