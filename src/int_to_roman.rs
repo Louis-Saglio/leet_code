@@ -65,6 +65,14 @@ Constraints:
 
 **/
 
+const I: u8 = "I".as_bytes()[0];
+const V: u8 = "V".as_bytes()[0];
+const X: u8 = "X".as_bytes()[0];
+const L: u8 = "L".as_bytes()[0];
+const C: u8 = "C".as_bytes()[0];
+const D: u8 = "D".as_bytes()[0];
+const M: u8 = "M".as_bytes()[0];
+
 fn convert_decimal(
     val: i32,
     unit: u8,
@@ -80,15 +88,19 @@ fn convert_decimal(
             index + 1
         }
         2 => {
-            buffer[index..index + 1].copy_from_slice(&[unit, unit]);
+            buffer[index] = unit;
+            buffer[index + 1] = unit;
             index + 2
         }
         3 => {
-            buffer[index..index + 3].copy_from_slice(&[unit, unit, unit]);
+            buffer[index] = unit;
+            buffer[index + 1] = unit;
+            buffer[index + 2] = unit;
             index + 3
         }
         4 => {
-            buffer[index..index + 2].copy_from_slice(&[unit, five]);
+            buffer[index] = unit;
+            buffer[index + 1] = five;
             index + 2
         }
         5 => {
@@ -96,19 +108,26 @@ fn convert_decimal(
             index + 1
         }
         6 => {
-            buffer[index..index + 2].copy_from_slice(&[five, unit]);
+            buffer[index] = five;
+            buffer[index + 1] = unit;
             index + 2
         }
         7 => {
-            buffer[index..index + 3].copy_from_slice(&[five, unit, unit]);
+            buffer[index] = five;
+            buffer[index + 1] = unit;
+            buffer[index + 2] = unit;
             index + 3
         }
         8 => {
-            buffer[index..index + 4].copy_from_slice(&[five, unit, unit, unit]);
+            buffer[index] = five;
+            buffer[index + 1] = unit;
+            buffer[index + 2] = unit;
+            buffer[index + 3] = unit;
             index + 4
         }
         9 => {
-            buffer[index..index + 2].copy_from_slice(&[unit, ten]);
+            buffer[index] = unit;
+            buffer[index + 1] = ten;
             index + 2
         }
         _ => unreachable!(),
@@ -117,30 +136,12 @@ fn convert_decimal(
 
 #[allow(dead_code)]
 pub fn int_to_roman(num: i32) -> String {
-    let (I, V, X, L, C, D, M) = (
-        "I".as_bytes()[0],
-        "V".as_bytes()[0],
-        "X".as_bytes()[0],
-        "L".as_bytes()[0],
-        "C".as_bytes()[0],
-        "D".as_bytes()[0],
-        "M".as_bytes()[0],
-    );
     let mut result = [0; 15];
     let mut index: usize = 0;
     let mut num = num;
-    let val = num / 1000;
-    let thousands: &[u8] = match val {
-        0 => &[],
-        1 => &[M],
-        2 => &[M, M],
-        3 => &[M, M, M],
-        _ => unreachable!(),
-    };
-    index += thousands.len();
-    result[..index].copy_from_slice(thousands);
-    num -= val * 1000;
-    for (magnitude, unit, five, ten) in [(100, C, D, M), (10, X, L, C), (1, I, V, X)] {
+    for (magnitude, unit, five, ten) in
+        [(1000, M, M, M), (100, C, D, M), (10, X, L, C), (1, I, V, X)]
+    {
         let decimal = num / magnitude;
         index = convert_decimal(decimal, unit, five, ten, &mut result, index);
         num -= decimal * magnitude;
