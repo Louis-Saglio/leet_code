@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 /**
 Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
 
@@ -46,44 +44,37 @@ impl Solution {
         // The signature is imposed by LeetCode.
         // I would have chosen Vec<[i32; 3]> instead as return type.
         let mut nums = nums;
-        let mut result = HashSet::new();
-        let mut seen_x = HashSet::new();
         nums.sort_unstable();
-        for (x_index, x) in nums.iter().enumerate() {
-            if seen_x.contains(x) {
+        let mut result = Vec::new();
+        let n = nums.len();
+
+        for i in 0..n {
+            if i > 0 && nums[i] == nums[i - 1] {
                 continue;
             }
-            seen_x.insert(*x); // Allocates, but the speed-up this cache provides for large inputs is worth it.
-            let target = -x;
-            let mut left = 0;
-            let mut right = nums.len() - 1;
+            let mut left = i + 1;
+            let mut right = n - 1;
+
             while left < right {
-                let sum = nums[left] + nums[right];
-                if sum == target {
-                    if x_index != left && x_index != right {
-                        let right_val = nums[right];
-                        let left_val = nums[left];
-                        let x = *x;
-                        // This hashset usage is allocating in the loop, which is not ideal.
-                        // But I couldn't find a way to remove duplicates.
-                        // Maybe using a bloom filter here and then doing a pass at the end to remove the potential leftover duplicates would be better.
-                        result.insert(if x > right_val {
-                            [left_val, right_val, x]
-                        } else if x > left_val {
-                            [left_val, x, right_val]
-                        } else {
-                            [x, left_val, right_val]
-                        });
+                let sum = nums[i] + nums[left] + nums[right];
+                if sum == 0 {
+                    result.push(vec![nums[i], nums[left], nums[right]]);
+                    while left < right && nums[left] == nums[left + 1] {
+                        left += 1;
+                    }
+                    while left < right && nums[right] == nums[right - 1] {
+                        right -= 1;
                     }
                     left += 1;
-                } else if sum < target {
+                    right -= 1;
+                } else if sum < 0 {
                     left += 1;
                 } else {
                     right -= 1;
                 }
             }
         }
-        result.into_iter().map(|it| it.to_vec()).collect()
+        result
     }
 }
 
