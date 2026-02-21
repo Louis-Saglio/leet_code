@@ -1,6 +1,4 @@
-use std::cmp::min;
-
-/**k
+/**
 Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
 
 
@@ -21,8 +19,8 @@ Output: 9
 Constraints:
 
     n == height.length
-    1 <= n <= 2 * 104
-    0 <= height[i] <= 105
+    1 <= n <= 2 * 10^4
+    0 <= height[i] <= 10^5
 
 **/
 
@@ -31,19 +29,24 @@ struct Solution;
 impl Solution {
     #[allow(dead_code)]
     pub fn trap(height: Vec<i32>) -> i32 {
+        if height.len() < 3 {
+            return 0;
+        }
+        let n = height.len();
+        let mut left = 0;
+        let mut right = n - 1;
+        let mut left_max = 0;
+        let mut right_max = 0;
         let mut total = 0;
-        for elevation in 1..=*height.iter().max().unwrap() {
-            let mut is_blocked_on_the_left = false;
-            let mut water_counter = 0;
-            for item in height.iter() {
-                let is_fill = item >= &elevation;
-                if is_fill {
-                    is_blocked_on_the_left = true;
-                    total += water_counter;
-                    water_counter = 0;
-                } else if is_blocked_on_the_left {
-                    water_counter += 1;
-                }
+        while left < right {
+            left_max = left_max.max(height[left]);
+            right_max = right_max.max(height[right]);
+            if left_max <= right_max {
+                total += left_max - height[left];
+                left += 1;
+            } else {
+                total += right_max - height[right];
+                right -= 1;
             }
         }
         total
